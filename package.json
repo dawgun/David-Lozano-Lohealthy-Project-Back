@@ -7,7 +7,10 @@
     "build": "tsc",
     "ts:dev": "tsc -w",
     "start": "node .",
-    "start:dev": "nodemon -q"
+    "start:dev": "nodemon -q",
+    "test": "jest src --passWithNoTests",
+    "test-dev": "jest src --watchAll",
+    "test-coverage": "jest src --coverage --passWithNoTests"
   },
   "keywords": [],
   "author": "",

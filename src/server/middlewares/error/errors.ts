@@ -2,9 +2,10 @@ import "../../../loadEnvironment";
 import Debug from "debug";
 import chalk from "chalk";
 import { NextFunction, Request, Response } from "express";
+import { ValidationError } from "express-validation";
 import CustomError from "../../../utils/CustomError/CustomError";
 
-const debug = Debug("lohealthy:server:middlewares/errors");
+const debug = Debug("lohealthygames:server:middlewares/errors");
 
 export const endpointError = (req: Request, res: Response) => {
   res.status(404).json({ error: "Endpoint not found" });
@@ -20,7 +21,15 @@ export const generalError = (
   next: NextFunction
 ) => {
   const errorCode = error.statusCode ?? 500;
-  const errorMessage = error.publicMessage ?? "Everything has peted";
+  let errorMessage = error.publicMessage ?? "Everything has peted";
+
+  if (error instanceof ValidationError) {
+    debug(chalk.red("Request validation error: "));
+    error.details.body.forEach((errorInfo) =>
+      debug(chalk.red(errorInfo.message))
+    );
+    errorMessage = "Wrong data";
+  }
 
   debug(chalk.red(error.message));
 

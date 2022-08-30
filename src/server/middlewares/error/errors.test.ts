@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import CustomError from "../../../utils/CustomError/CustomError";
+import CustomErrorExpress from "../../../utils/CustomTestExpressError/CustomExpressError";
 import { endpointError, generalError } from "./errors";
 
 describe("Given the middleware errors", () => {
@@ -50,7 +51,29 @@ describe("Given the middleware errors", () => {
         });
       });
     });
+
+    describe("Then it receives a response with a validation error", () => {
+      test("Then call the response method json with 'Wrong data' message", () => {
+        const error = new CustomErrorExpress(400, "", "");
+        error.details.body[0] = {
+          message: "Hola a todos <3",
+          name: "ValidationError",
+          isJoi: true,
+          details: [],
+          annotate: jest.fn(),
+          _original: "",
+        };
+        const expectedPublicMessage = "Wrong data";
+
+        generalError(error, req as Request, res as Response, next);
+
+        expect(res.json).toHaveBeenCalledWith({
+          error: expectedPublicMessage,
+        });
+      });
+    });
   });
+
   describe("Given the endpointError middleware", () => {
     describe("When it receives a response", () => {
       const req: Partial<Request> = {};

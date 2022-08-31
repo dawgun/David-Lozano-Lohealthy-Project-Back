@@ -32,6 +32,7 @@ describe("Given the userController controller", () => {
 
       test("Then call the response method json with an social user", async () => {
         const passwordHashed = "12345";
+        const expectedResponse = { message: "User created" };
 
         User.create = jest.fn().mockResolvedValue(mockUser);
         bcrypt.hash = jest.fn().mockResolvedValue(passwordHashed);
@@ -42,7 +43,7 @@ describe("Given the userController controller", () => {
           next as NextFunction
         );
 
-        expect(res.json).toHaveBeenCalledWith({ user: mockUser });
+        expect(res.json).toHaveBeenCalledWith(expectedResponse);
       });
     });
 

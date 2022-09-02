@@ -1,10 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import User from "../../database/models/User";
-import LohealthyUser from "../../types/user";
-import hashCreator from "../../utils/auth/auth";
+import CustomJwtPayload from "../../types/payload";
+import { LohealthyUser, LoginUser, DatabaseUser } from "../../types/user";
+import { hashCreator, hashCompare, createToken } from "../../utils/auth/auth";
 import CustomError from "../../utils/CustomError/CustomError";
 
-const userRegister = async (
+export const userRegister = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -26,4 +27,63 @@ const userRegister = async (
   }
 };
 
-export default userRegister;
+export const userLogin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const user: LoginUser = req.body;
+  const userError = new CustomError(
+    403,
+    "User not found",
+    "User or password not valid"
+  );
+
+  let findUser: DatabaseUser;
+
+  try {
+    findUser = await User.findOne({ userName: user.userName });
+    if (!findUser) {
+      next(userError);
+      return;
+    }
+  } catch (error) {
+    const customMongooseError = new CustomError(
+      403,
+      (error as Error).message,
+      "User or password invalid"
+    );
+    next(customMongooseError);
+    return;
+  }
+
+  try {
+    const isPasswordValid = await hashCompare(user.password, findUser.password);
+    if (!isPasswordValid) {
+      userError.privateMessage = "Password invalid";
+      next(userError);
+      return;
+    }
+  } catch (error) {
+    const hashError = new CustomError(
+      403,
+      (error as Error).message,
+      "User or password not valid "
+    );
+    next(hashError);
+    return;
+  }
+
+  const payLoad: CustomJwtPayload = {
+    id: findUser.id,
+    userName: findUser.userName,
+  };
+
+  const responseData = {
+    user: {
+      token: createToken(payLoad),
+    },
+  };
+
+  res.status(200).json(responseData);
+};

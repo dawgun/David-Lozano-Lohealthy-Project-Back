@@ -11,6 +11,15 @@
       "request": {
         "method": "POST",
         "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"userName\": \"Nachus\", \"email\": \"nachus\", \"password\": \"123456\", \"repeat_password\": \"123456\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
         "url": {
           "raw": "{{APISERVER}}user/register",
           "host": ["{{APISERVER}}user"],
@@ -27,6 +36,28 @@
         "url": {
           "raw": "{{APISERVER}}",
           "host": ["{{APISERVER}}"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"userName\": \"Nachus\",\n    \"password\": \"123456\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{APISERVER}}user/login",
+          "host": ["{{APISERVER}}user"],
+          "path": ["login"]
         }
       },
       "response": []

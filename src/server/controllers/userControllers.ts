@@ -77,6 +77,7 @@ export const userLogin = async (
   const payLoad: CustomJwtPayload = {
     id: findUser.id,
     userName: findUser.userName,
+    image: findUser.image,
   };
 
   const responseData = {

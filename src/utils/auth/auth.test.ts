@@ -46,7 +46,7 @@ describe("Given the auth functions util", () => {
   describe("When it's called the createToken function", () => {
     describe("And it's called with payload with userName", () => {
       test("Then it should return 'true'", async () => {
-        const user = { userName: "Lorena", id: "1" };
+        const user = { userName: "Lorena", id: "1", image: "" };
         const mockedToken = "3p985qwrywn98pvwwqtmw";
         jwt.sign = jest.fn().mockReturnValue(mockedToken);
 

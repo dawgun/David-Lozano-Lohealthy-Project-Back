@@ -1,13 +1,20 @@
 import { Joi } from "express-validation";
 
-const registerValidation = {
+const minLength = 5;
+
+export const registerValidation = {
   body: Joi.object({
-    userName: Joi.string().min(5).required(),
-    password: Joi.string().min(5).required(),
+    userName: Joi.string().min(minLength).required(),
+    password: Joi.string().min(minLength).required(),
     repeat_password: Joi.ref("password"),
     email: Joi.string().email().required(),
     image: Joi.string(),
   }),
 };
 
-export default registerValidation;
+export const loginValidation = {
+  body: Joi.object({
+    userName: Joi.string().min(minLength).required(),
+    password: Joi.string().min(minLength).required(),
+  }),
+};

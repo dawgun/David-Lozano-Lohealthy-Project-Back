@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
-import { hashCompare, hashCreator } from "./auth";
+import jwt from "jsonwebtoken";
+import { createToken, hashCompare, hashCreator } from "./auth";
 
 describe("Given the auth functions util", () => {
   describe("When it's called the hashCreator function", () => {
@@ -38,6 +39,20 @@ describe("Given the auth functions util", () => {
         const isSamePassword = await hashCompare(password, hashedDBPassword);
 
         expect(isSamePassword).toBe(expectedComparation);
+      });
+    });
+  });
+
+  describe("When it's called the createToken function", () => {
+    describe("And it's called with payload with userName", () => {
+      test("Then it should return 'true'", async () => {
+        const user = { userName: "Lorena", id: "1" };
+        const mockedToken = "3p985qwrywn98pvwwqtmw";
+        jwt.sign = jest.fn().mockReturnValue(mockedToken);
+
+        const tokenCreated = createToken(user);
+
+        expect(tokenCreated).toBe(mockedToken);
       });
     });
   });

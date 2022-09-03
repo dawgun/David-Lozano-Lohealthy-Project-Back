@@ -110,9 +110,7 @@ describe("Given the userController controller", () => {
 
         await userLogin(req as Request, res as Response, next as NextFunction);
 
-        expect(res.json).toHaveBeenCalledWith({
-          user: { token: jwtReturn },
-        });
+        expect(res.json).toHaveBeenCalledWith({ token: jwtReturn });
       });
 
       describe("And it's receieve a correct user", () => {

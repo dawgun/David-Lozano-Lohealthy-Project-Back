@@ -81,9 +81,7 @@ export const userLogin = async (
   };
 
   const responseData = {
-    user: {
-      token: createToken(payLoad),
-    },
+    token: createToken(payLoad),
   };
 
   res.status(200).json(responseData);

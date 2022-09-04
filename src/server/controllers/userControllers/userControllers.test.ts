@@ -18,7 +18,7 @@ describe("Given the userController controller", () => {
     };
     const next: Partial<NextFunction> = jest.fn();
 
-    describe("And it's received a correct Response", () => {
+    describe("And it's received a correct Request", () => {
       test("Then call the response method status with 201", async () => {
         const status = 201;
         User.create = jest.fn().mockResolvedValue(mockUser);
@@ -49,7 +49,7 @@ describe("Given the userController controller", () => {
       });
     });
 
-    describe("And it's received a incorrect Response", () => {
+    describe("And it's received a incorrect Request", () => {
       test("Then call next function with an error", async () => {
         const error = new CustomError(400, "", "");
         User.create = jest.fn().mockRejectedValue(new Error());

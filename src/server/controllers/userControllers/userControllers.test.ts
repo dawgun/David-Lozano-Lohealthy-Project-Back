@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import User from "../../database/models/User";
+import User from "../../../database/models/User";
 import { userLogin, userRegister } from "./userControllers";
-import CustomError from "../../utils/CustomError/CustomError";
-import { DatabaseUser, LoginUser } from "../../types/user";
+import CustomError from "../../../utils/CustomError/CustomError";
+import { DatabaseUser, LoginUser } from "../../../types/user";
 
 describe("Given the userController controller", () => {
   describe("When it's called userRegister controller", () => {

@@ -1,9 +1,9 @@
 import request from "supertest";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
-import app from "..";
-import connectDB from "../../database";
-import User from "../../database/models/User";
+import app from "../..";
+import connectDB from "../../../database";
+import User from "../../../database/models/User";
 
 let mongoServer: MongoMemoryServer;
 const userTest = {

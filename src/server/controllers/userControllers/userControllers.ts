@@ -1,9 +1,13 @@
 import { NextFunction, Request, Response } from "express";
-import User from "../../database/models/User";
-import CustomJwtPayload from "../../types/payload";
-import { LohealthyUser, LoginUser, DatabaseUser } from "../../types/user";
-import { hashCreator, hashCompare, createToken } from "../../utils/auth/auth";
-import CustomError from "../../utils/CustomError/CustomError";
+import User from "../../../database/models/User";
+import CustomJwtPayload from "../../../types/payload";
+import { LohealthyUser, LoginUser, DatabaseUser } from "../../../types/user";
+import {
+  hashCreator,
+  hashCompare,
+  createToken,
+} from "../../../utils/auth/auth";
+import CustomError from "../../../utils/CustomError/CustomError";
 
 export const userRegister = async (
   req: Request,

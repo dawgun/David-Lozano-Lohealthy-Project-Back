@@ -61,6 +61,18 @@
         }
       },
       "response": []
+    },
+    {
+      "name": "Get Games",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{APISERVER}}games",
+          "host": ["{{APISERVER}}games"]
+        }
+      },
+      "response": []
     }
   ],
   "event": [

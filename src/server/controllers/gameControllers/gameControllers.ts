@@ -2,7 +2,11 @@ import { NextFunction, Request, Response } from "express";
 import Game from "../../../database/models/Game";
 import CustomError from "../../../utils/CustomError/CustomError";
 
-const getAllGames = async (req: Request, res: Response, next: NextFunction) => {
+export const getAllGames = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   let games;
 
   try {
@@ -30,4 +34,24 @@ const getAllGames = async (req: Request, res: Response, next: NextFunction) => {
   res.status(200).json({ games });
 };
 
-export default getAllGames;
+export const deleteGame = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { idGame } = req.params;
+
+  try {
+    await Game.findById({ _id: idGame });
+    await Game.deleteOne({ _id: idGame });
+
+    res.status(202).json({ message: "Game has been deleted" });
+  } catch (error) {
+    const customError = new CustomError(
+      404,
+      error.message,
+      "Error deleting game"
+    );
+    next(customError);
+  }
+};

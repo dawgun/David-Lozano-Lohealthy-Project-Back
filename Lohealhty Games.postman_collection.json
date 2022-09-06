@@ -73,6 +73,19 @@
         }
       },
       "response": []
+    },
+    {
+      "name": "Delete Game",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{APISERVER}}games/delete/id",
+          "host": ["{{APISERVER}}games"],
+          "path": ["delete", "id"]
+        }
+      },
+      "response": []
     }
   ],
   "event": [

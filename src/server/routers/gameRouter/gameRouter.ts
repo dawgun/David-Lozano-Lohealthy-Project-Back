@@ -1,8 +1,12 @@
 import express from "express";
-import getAllGames from "../../controllers/gameControllers/gameControllers";
+import {
+  deleteGame,
+  getAllGames,
+} from "../../controllers/gameControllers/gameControllers";
 
 const gameRouter = express.Router();
 
 gameRouter.get("/", getAllGames);
+gameRouter.delete("/delete/:idGame", deleteGame);
 
 export default gameRouter;

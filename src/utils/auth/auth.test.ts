@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { createToken, hashCompare, hashCreator } from "./auth";
+import CustomJwtPayload from "../../types/payload";
+import { createToken, hashCompare, hashCreator, verifyToken } from "./auth";
 
 describe("Given the auth functions util", () => {
   describe("When it's called the hashCreator function", () => {
@@ -53,6 +54,35 @@ describe("Given the auth functions util", () => {
         const tokenCreated = createToken(user);
 
         expect(tokenCreated).toBe(mockedToken);
+      });
+    });
+  });
+
+  describe("When it's called the verifyToken function", () => {
+    const token = "bh89adg8a9dg8a";
+    describe("And it's called with a correct token", () => {
+      test("Then should return a custom payload", () => {
+        const payloadReturned: CustomJwtPayload = {
+          id: "1",
+          image: "marius.jpg",
+          userName: "Marius",
+        };
+        jwt.verify = jest.fn().mockReturnValue(payloadReturned);
+
+        const user = verifyToken(token);
+
+        expect(user).toStrictEqual(payloadReturned);
+      });
+    });
+
+    describe("And it's called with a incorrect token", () => {
+      test("Then should return 'error'", () => {
+        const payloadReturned = "error";
+        jwt.verify = jest.fn().mockReturnValue(payloadReturned);
+
+        const userError = verifyToken(token);
+
+        expect(userError).toStrictEqual(payloadReturned);
       });
     });
   });

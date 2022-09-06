@@ -6,6 +6,9 @@ import CustomJwtPayload from "../../types/payload";
 export const createToken = (payload: CustomJwtPayload) =>
   jwt.sign(payload, process.env.SECRET);
 
+export const verifyToken = (token: string) =>
+  jwt.verify(token, process.env.SECRET);
+
 export const hashCreator = (text: string) => {
   const salt = 10;
   return bcrypt.hash(text, salt);

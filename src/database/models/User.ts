@@ -20,6 +20,12 @@ const UserSchema = new Schema({
     type: String,
     required: true,
   },
+  games: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Game",
+    },
+  ],
 });
 
 const User = model("User", UserSchema, "users");

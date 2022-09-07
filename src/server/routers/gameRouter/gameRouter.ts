@@ -8,7 +8,7 @@ import {
 import userAuthentification from "../../middlewares/userAuthentification/userAuthentification";
 
 const gameRouter = express.Router();
-const upload = multer({ dest: "uploads/" });
+const upload = multer({ dest: "uploads/", limits: { fileSize: 5000000 } });
 
 gameRouter.get("/", getAllGames);
 gameRouter.post(

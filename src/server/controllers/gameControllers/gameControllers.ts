@@ -65,7 +65,7 @@ export const createGame = async (
 ) => {
   const newGame = req.body;
   newGame.owner = req.payload.id;
-  newGame.image = `uploads/${req.file.originalname}`;
+  newGame.image = `uploads/${req.file.filename}`;
 
   try {
     const newGameCreated = await Game.create(newGame);

@@ -1,16 +1,21 @@
 import { NextFunction, Request, Response } from "express";
 import Game from "../../../database/models/Game";
+import User from "../../../database/models/User";
+import CustomRequest from "../../../types/customRequest";
+import CustomJwtPayload from "../../../types/payload";
 import CustomError from "../../../utils/CustomError/CustomError";
-import { deleteGame, getAllGames } from "./gameControllers";
+import { createGame, deleteGame, getAllGames } from "./gameControllers";
 
 describe("Given the gameControllers", () => {
+  const res: Partial<Response> = {
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn(),
+  };
+  const next = jest.fn() as Partial<NextFunction>;
+
   describe("When it's called getAllGames controller", () => {
     const req: Partial<Request> = {};
-    const res: Partial<Response> = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
-    };
-    const next: Partial<NextFunction> = jest.fn();
+
     describe("And database return a list of games", () => {
       test("Then call the response method status with 200", async () => {
         const mockGameList = [{ game: "" }];
@@ -84,11 +89,6 @@ describe("Given the gameControllers", () => {
   describe("When deleteRobot it's called", () => {
     describe("And it receives a response with correct id", () => {
       const req: Partial<Request> = { params: { idGame: "1" } };
-      const res: Partial<Response> = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
-      const next = jest.fn() as Partial<NextFunction>;
 
       test("Then it should call the response method status with 202", async () => {
         const status = 202;
@@ -114,20 +114,89 @@ describe("Given the gameControllers", () => {
     });
 
     describe("And it receives a response with wrong id", () => {
-      test("Then it should call next function with an error ", async () => {
+      test("Then it should call next function with an error", async () => {
         const req: Partial<Request> = { params: { idRobot: "23" } };
-        const res: Partial<Response> = {
-          status: jest.fn().mockReturnThis(),
-          json: jest.fn(),
-        };
-        const next = jest.fn() as Partial<NextFunction>;
-
         const customError = new Error();
 
         Game.findById = jest.fn().mockRejectedValue(new Error());
         Game.deleteOne = jest.fn();
 
         await deleteGame(req as Request, res as Response, next as NextFunction);
+
+        expect(next).toHaveBeenCalledWith(customError);
+      });
+    });
+  });
+
+  describe("When createGame it's called", () => {
+    const bodyRequest = {
+      title: "ZeldaRandom2",
+      image: "uploads/2ff48d36e670e4ecc0fda90df16c45d6.jpeg",
+      players: "Two players",
+      genre: "RPG",
+      synopsis: "En un lugar muy muy lejano",
+    };
+
+    const payloadRequest: CustomJwtPayload = {
+      userName: "Nachus",
+      id: "631096a08ada91dad208fb07",
+      image: "nachus.jpg",
+    };
+
+    const fileRequest = {
+      originalname: "zeldarandom2.jpg",
+    } as Partial<Express.Multer.File>;
+
+    const req = {
+      body: bodyRequest,
+      payload: payloadRequest,
+      file: fileRequest,
+    } as Partial<CustomRequest>;
+
+    const idGame = "ZeldaId01";
+    const userFinded = "idnachus88";
+    const gameCreated = { ...bodyRequest, id: idGame, games: [""] };
+    Game.create = jest.fn().mockResolvedValue(gameCreated);
+    User.findById = jest.fn().mockResolvedValue({
+      id: userFinded,
+      games: [],
+      save: jest.fn(),
+    });
+
+    describe("And it receives a response with a game", () => {
+      test("Then call the response method status with 201", async () => {
+        const expectedStatus = 201;
+
+        await createGame(
+          req as CustomRequest,
+          res as Response,
+          next as NextFunction
+        );
+
+        expect(res.status).toHaveBeenCalledWith(expectedStatus);
+      });
+
+      test("Then it should call the response method json with gameCreated", async () => {
+        await createGame(
+          req as CustomRequest,
+          res as Response,
+          next as NextFunction
+        );
+
+        expect(res.json).toHaveBeenCalledWith({ game: gameCreated });
+      });
+    });
+
+    describe("And it receives a response with a game existent", () => {
+      test("Then it should call next function with an error", async () => {
+        Game.create = jest.fn().mockRejectedValue(gameCreated);
+        const customError = new CustomError(400, "", "Error creating new game");
+
+        await createGame(
+          req as CustomRequest,
+          res as Response,
+          next as NextFunction
+        );
 
         expect(next).toHaveBeenCalledWith(customError);
       });

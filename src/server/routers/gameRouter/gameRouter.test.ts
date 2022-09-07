@@ -23,12 +23,6 @@ const userForCreate = {
   email: "lohealhtygames@gmail.com",
 };
 
-const userForCreate2 = {
-  userName: "Lohealthy2",
-  password: "123456",
-  email: "lohealhtygames2@gmail.com",
-};
-
 let lohealthyToken: string;
 
 beforeAll(async () => {

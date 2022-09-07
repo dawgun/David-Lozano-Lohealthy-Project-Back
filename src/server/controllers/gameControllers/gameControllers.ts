@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import Game from "../../../database/models/Game";
+import User from "../../../database/models/User";
+import CustomRequest from "../../../types/customRequest";
 import CustomError from "../../../utils/CustomError/CustomError";
 
 export const getAllGames = async (
@@ -51,6 +53,33 @@ export const deleteGame = async (
       404,
       error.message,
       "Error deleting game"
+    );
+    next(customError);
+  }
+};
+
+export const createGame = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  const newGame = req.body;
+  newGame.owner = req.payload.id;
+  newGame.image = `uploads/${req.file.originalname}`;
+
+  try {
+    const newGameCreated = await Game.create(newGame);
+
+    const user = await User.findById(newGameCreated.owner);
+    user.games.push(newGameCreated.id);
+    user.save();
+
+    res.status(201).json({ game: newGameCreated });
+  } catch (error) {
+    const customError = new CustomError(
+      400,
+      error.message,
+      "Error creating new game"
     );
     next(customError);
   }

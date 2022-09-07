@@ -23,29 +23,28 @@ const userForCreate = {
   email: "lohealhtygames@gmail.com",
 };
 
-const userForCreate2 = {
-  userName: "Lohealthy2",
-  password: "123456",
-  email: "lohealhtygames2@gmail.com",
-};
-
 let lohealthyToken: string;
 
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
   const mongoURL = mongoServer.getUri();
 
-  Game.create(gameTest);
-
   await connectDB(mongoURL);
-});
 
-afterEach(async () => {
-  User.deleteMany();
-  Game.deleteMany();
+  await Game.create(gameTest);
+  const newUser = await User.create(userForCreate);
+
+  const mockPayload = {
+    id: newUser.id,
+    userName: userForCreate.userName,
+    image: "user.jpg",
+  };
+  lohealthyToken = await createToken(mockPayload);
 });
 
 afterAll(async () => {
+  User.deleteMany();
+  Game.deleteMany();
   await mongoose.connection.close();
   await mongoServer.stop();
 });
@@ -66,13 +65,6 @@ describe("Given the gameRouter", () => {
     describe("And it receives a correct request with game and token in authorization", () => {
       test("Then it should response with the new game created", async () => {
         const expectedTitleBody = "mario";
-        const newUser = await User.create(userForCreate);
-        const mockPayload = {
-          id: newUser.id,
-          userName: userForCreate.userName,
-          image: "user.jpg",
-        };
-        lohealthyToken = await createToken(mockPayload);
 
         const { body } = await request(app)
           .post("/games/create")
@@ -93,13 +85,6 @@ describe("Given the gameRouter", () => {
 
     describe("And it receives an uncomplete game", () => {
       test("Then it should response with status 400 and a message 'Wrong data'", async () => {
-        const newUser = await User.create(userForCreate2);
-        const mockPayload = {
-          id: newUser.id,
-          userName: userForCreate.userName,
-          image: "user.jpg",
-        };
-        lohealthyToken = await createToken(mockPayload);
         const message = "Wrong data";
 
         const { body } = await request(app)

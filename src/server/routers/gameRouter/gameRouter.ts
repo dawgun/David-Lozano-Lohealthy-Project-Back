@@ -1,5 +1,7 @@
 import express from "express";
+import { validate } from "express-validation";
 import multer from "multer";
+import createGameValidation from "../../../schemas/gameCredentialsSchema";
 import {
   createGame,
   deleteGame,
@@ -14,6 +16,7 @@ gameRouter.get("/", getAllGames);
 gameRouter.post(
   "/create",
   upload.single("image"),
+  validate(createGameValidation, {}, { abortEarly: false }),
   userAuthentification,
   createGame
 );

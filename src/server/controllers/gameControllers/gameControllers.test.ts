@@ -1,4 +1,6 @@
 import { NextFunction, Request, Response } from "express";
+import fs from "fs/promises";
+import path from "path";
 import Game from "../../../database/models/Game";
 import User from "../../../database/models/User";
 import CustomRequest from "../../../types/customRequest";
@@ -6,13 +8,27 @@ import CustomJwtPayload from "../../../types/payload";
 import CustomError from "../../../utils/CustomError/CustomError";
 import { createGame, deleteGame, getAllGames } from "./gameControllers";
 
-describe("Given the gameControllers", () => {
-  const res: Partial<Response> = {
+let mockFs: () => Promise<void>;
+let mockPath: () => string;
+let res: Partial<Response>;
+let next: Partial<NextFunction>;
+
+beforeAll(() => {
+  res = {
     status: jest.fn().mockReturnThis(),
     json: jest.fn(),
   };
-  const next = jest.fn() as Partial<NextFunction>;
+  next = jest.fn();
+});
 
+beforeEach(() => {
+  mockFs = jest.fn();
+  mockPath = jest.fn().mockReturnValue("filepath");
+  fs.rename = mockFs;
+  path.join = mockPath;
+});
+
+describe("Given the gameControllers", () => {
   describe("When it's called getAllGames controller", () => {
     const req: Partial<Request> = {};
 
@@ -144,6 +160,7 @@ describe("Given the gameControllers", () => {
     };
 
     const fileRequest = {
+      filename: "zeldarandom2",
       originalname: "zeldarandom2.jpg",
     } as Partial<Express.Multer.File>;
 
@@ -164,6 +181,36 @@ describe("Given the gameControllers", () => {
     });
 
     describe("And it receives a response with a game", () => {
+      test("Then it should call fs.rename with two filepath", async () => {
+        const filepathTest = "filepath";
+
+        await createGame(
+          req as CustomRequest,
+          res as Response,
+          next as NextFunction
+        );
+
+        expect(mockFs).toHaveBeenCalledWith(filepathTest, filepathTest);
+      });
+
+      test("Then it should call path.join two times and folderpath with filename", async () => {
+        const folderPath = "uploads";
+        const filename = "zeldarandom2";
+
+        await createGame(
+          req as CustomRequest,
+          res as Response,
+          next as NextFunction
+        );
+
+        expect(mockPath).toHaveBeenCalledTimes(2);
+        expect(mockPath).toHaveBeenCalledWith(folderPath, filename);
+        expect(mockPath).toHaveBeenCalledWith(
+          folderPath,
+          expect.stringContaining(filename)
+        );
+      });
+
       test("Then call the response method status with 201", async () => {
         const expectedStatus = 201;
 

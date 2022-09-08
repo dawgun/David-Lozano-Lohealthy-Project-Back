@@ -1,4 +1,6 @@
 import { NextFunction, Request, Response } from "express";
+import fs from "fs/promises";
+import path from "path";
 import Game from "../../../database/models/Game";
 import User from "../../../database/models/User";
 import CustomRequest from "../../../types/customRequest";
@@ -65,7 +67,14 @@ export const createGame = async (
 ) => {
   const newGame = req.body;
   newGame.owner = req.payload.id;
-  newGame.image = `uploads/${req.file.filename}`;
+  const { file } = req;
+
+  const newPictureName = `${Date.now()}-${file.originalname}`;
+  await fs.rename(
+    path.join("uploads", file.filename),
+    path.join("uploads", newPictureName)
+  );
+  newGame.image = newPictureName;
 
   try {
     const newGameCreated = await Game.create(newGame);

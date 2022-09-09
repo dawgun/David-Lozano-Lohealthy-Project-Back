@@ -14,6 +14,7 @@ const gameTest = {
   genre: "RPG",
   players: "One Player",
   image: "zelda.jpg",
+  backupImage: "supabase/zelda.jpg",
   release: "2022-09-04T17:14:58.542Z",
 };
 

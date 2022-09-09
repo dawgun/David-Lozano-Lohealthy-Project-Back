@@ -182,41 +182,6 @@ describe("Given the gameControllers", () => {
     });
 
     describe("And it receives a response with a game", () => {
-      const folderPath = "uploads";
-      const filename = "zeldarandom2";
-
-      test("Then it should call fs.rename with two filepath", async () => {
-        const oldNamePath = "uploads/zeldarandom2";
-
-        await createGame(
-          req as CustomRequest,
-          res as Response,
-          next as NextFunction
-        );
-
-        expect(mockFs).toHaveBeenCalledWith(
-          oldNamePath,
-          expect.stringContaining(filename)
-        );
-      });
-
-      test("Then it should call path.join two times and folderpath with filename", async () => {
-        const pathJoinSpy = jest.spyOn(path, "join");
-
-        await createGame(
-          req as CustomRequest,
-          res as Response,
-          next as NextFunction
-        );
-
-        expect(pathJoinSpy).toHaveBeenCalledTimes(2);
-        expect(pathJoinSpy).toHaveBeenCalledWith(folderPath, filename);
-        expect(pathJoinSpy).toHaveBeenCalledWith(
-          folderPath,
-          expect.stringContaining(filename)
-        );
-      });
-
       test("Then call the response method status with 201", async () => {
         const expectedStatus = 201;
 

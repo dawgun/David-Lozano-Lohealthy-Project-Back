@@ -7,6 +7,7 @@ import {
   deleteGame,
   getAllGames,
 } from "../../controllers/gameControllers/gameControllers";
+import imageStorage from "../../middlewares/imageStorage/imageStorage";
 import userAuthentification from "../../middlewares/userAuthentification/userAuthentification";
 
 const gameRouter = express.Router();
@@ -18,6 +19,7 @@ gameRouter.post(
   upload.single("image"),
   validate(createGameValidation, {}, { abortEarly: false }),
   userAuthentification,
+  imageStorage,
   createGame
 );
 gameRouter.delete("/delete/:idGame", deleteGame);

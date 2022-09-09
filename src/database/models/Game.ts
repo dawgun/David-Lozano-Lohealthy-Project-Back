@@ -9,6 +9,10 @@ const gameSchema = new Schema({
     type: String,
     required: true,
   },
+  backupImage: {
+    type: String,
+    required: true,
+  },
   players: {
     type: String,
     required: true,

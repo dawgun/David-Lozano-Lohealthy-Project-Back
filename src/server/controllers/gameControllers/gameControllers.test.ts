@@ -1,6 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import fs from "fs/promises";
-import path from "path";
 import Game from "../../../database/models/Game";
 import User from "../../../database/models/User";
 import CustomRequest from "../../../types/customRequest";
@@ -8,7 +6,6 @@ import CustomJwtPayload from "../../../types/payload";
 import CustomError from "../../../utils/CustomError/CustomError";
 import { createGame, deleteGame, getAllGames } from "./gameControllers";
 
-let mockFs: () => Promise<void>;
 let res: Partial<Response>;
 let next: Partial<NextFunction>;
 
@@ -18,11 +15,6 @@ beforeAll(() => {
     json: jest.fn(),
   };
   next = jest.fn();
-});
-
-beforeEach(() => {
-  mockFs = jest.fn();
-  fs.rename = mockFs;
 });
 
 afterAll(() => {

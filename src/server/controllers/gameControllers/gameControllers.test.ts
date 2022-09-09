@@ -9,7 +9,6 @@ import CustomError from "../../../utils/CustomError/CustomError";
 import { createGame, deleteGame, getAllGames } from "./gameControllers";
 
 let mockFs: () => Promise<void>;
-let mockPath: () => string;
 let res: Partial<Response>;
 let next: Partial<NextFunction>;
 
@@ -23,9 +22,11 @@ beforeAll(() => {
 
 beforeEach(() => {
   mockFs = jest.fn();
-  mockPath = jest.fn().mockReturnValue("filepath");
   fs.rename = mockFs;
-  path.join = mockPath;
+});
+
+afterAll(() => {
+  jest.clearAllMocks();
 });
 
 describe("Given the gameControllers", () => {
@@ -102,12 +103,12 @@ describe("Given the gameControllers", () => {
     });
   });
 
-  describe("When deleteRobot it's called", () => {
+  describe("When deleteCreate it's called", () => {
     describe("And it receives a response with correct id", () => {
       const req: Partial<Request> = { params: { idGame: "1" } };
 
-      test("Then it should call the response method status with 202", async () => {
-        const status = 202;
+      test("Then it should call the response method status with 200", async () => {
+        const status = 200;
 
         Game.findById = jest.fn();
         Game.deleteOne = jest.fn();
@@ -131,7 +132,7 @@ describe("Given the gameControllers", () => {
 
     describe("And it receives a response with wrong id", () => {
       test("Then it should call next function with an error", async () => {
-        const req: Partial<Request> = { params: { idRobot: "23" } };
+        const req: Partial<Request> = { params: { idGame: "23" } };
         const customError = new Error();
 
         Game.findById = jest.fn().mockRejectedValue(new Error());
@@ -181,8 +182,11 @@ describe("Given the gameControllers", () => {
     });
 
     describe("And it receives a response with a game", () => {
+      const folderPath = "uploads";
+      const filename = "zeldarandom2";
+
       test("Then it should call fs.rename with two filepath", async () => {
-        const filepathTest = "filepath";
+        const oldNamePath = "uploads/zeldarandom2";
 
         await createGame(
           req as CustomRequest,
@@ -190,12 +194,14 @@ describe("Given the gameControllers", () => {
           next as NextFunction
         );
 
-        expect(mockFs).toHaveBeenCalledWith(filepathTest, filepathTest);
+        expect(mockFs).toHaveBeenCalledWith(
+          oldNamePath,
+          expect.stringContaining(filename)
+        );
       });
 
       test("Then it should call path.join two times and folderpath with filename", async () => {
-        const folderPath = "uploads";
-        const filename = "zeldarandom2";
+        const pathJoinSpy = jest.spyOn(path, "join");
 
         await createGame(
           req as CustomRequest,
@@ -203,9 +209,9 @@ describe("Given the gameControllers", () => {
           next as NextFunction
         );
 
-        expect(mockPath).toHaveBeenCalledTimes(2);
-        expect(mockPath).toHaveBeenCalledWith(folderPath, filename);
-        expect(mockPath).toHaveBeenCalledWith(
+        expect(pathJoinSpy).toHaveBeenCalledTimes(2);
+        expect(pathJoinSpy).toHaveBeenCalledWith(folderPath, filename);
+        expect(pathJoinSpy).toHaveBeenCalledWith(
           folderPath,
           expect.stringContaining(filename)
         );

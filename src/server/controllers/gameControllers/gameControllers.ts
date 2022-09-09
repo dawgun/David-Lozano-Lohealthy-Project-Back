@@ -49,7 +49,7 @@ export const deleteGame = async (
     await Game.findById({ _id: idGame });
     await Game.deleteOne({ _id: idGame });
 
-    res.status(202).json({ message: "Game has been deleted" });
+    res.status(200).json({ message: "Game has been deleted" });
   } catch (error) {
     const customError = new CustomError(
       404,

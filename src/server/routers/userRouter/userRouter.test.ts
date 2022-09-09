@@ -60,7 +60,7 @@ describe("Given the endpoint POST /users/register", () => {
       const { body } = await request(app)
         .post("/user/register")
         .send(userTest)
-        .expect(400);
+        .expect(409);
 
       expect(body).toHaveProperty("error", message);
     });

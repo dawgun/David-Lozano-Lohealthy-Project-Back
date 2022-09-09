@@ -50,6 +50,7 @@ beforeEach(async () => {
 afterAll(async () => {
   await fs.unlink("uploads/1000-zeldarandom2.jpg");
   await fs.unlink("uploads/1001-zeldarandom2.jpg");
+  jest.clearAllMocks();
 });
 
 describe("Given the imageStorage middleware", () => {

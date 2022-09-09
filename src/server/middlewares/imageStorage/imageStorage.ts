@@ -1,37 +1,25 @@
-import { NextFunction, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import fs from "fs/promises";
 import path from "path";
-import CustomRequest from "../../../types/customRequest";
-import CustomError from "../../../utils/CustomError/CustomError";
 import supabase from "../../../utils/supabaseClient/supabaseClient";
 
 const imageStorage = async (
-  req: CustomRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const { file } = req;
+  const { filename, originalname } = req.file;
   const storage = supabase.storage.from("lohealthy-games");
 
-  const newPictureName = `${Date.now()}-${file.originalname}`;
+  const newPictureName = `${Date.now()}-${originalname}`;
   await fs.rename(
-    path.join("uploads", file.filename),
+    path.join("uploads", filename),
     path.join("uploads", newPictureName)
   );
 
   const readFile = await fs.readFile(path.join("uploads", newPictureName));
 
-  const resultUpload = await storage.upload(newPictureName, readFile);
-
-  if (resultUpload.error) {
-    const supabaseError = new CustomError(
-      400,
-      resultUpload.error.message,
-      "Error uploading image"
-    );
-    next(supabaseError);
-    return;
-  }
+  await storage.upload(newPictureName, readFile);
 
   const imageUrl = storage.getPublicUrl(newPictureName);
 

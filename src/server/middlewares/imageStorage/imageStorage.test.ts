@@ -49,7 +49,6 @@ beforeEach(async () => {
 
 afterAll(async () => {
   await fs.unlink("uploads/1000-zeldarandom2.jpg");
-  await fs.unlink("uploads/1001-zeldarandom2.jpg");
   jest.clearAllMocks();
 });
 
@@ -66,22 +65,6 @@ describe("Given the imageStorage middleware", () => {
         );
 
         expect(next).toHaveBeenCalledWith();
-      });
-    });
-
-    describe("And image is not uploaded give an error", () => {
-      test("Then next then should be called with an error", async () => {
-        jest.spyOn(Date, "now").mockReturnValueOnce(1001);
-        const customError = new CustomError(400, "", "Error uploading image");
-        mockUploadError.error = customError;
-
-        await imageStorage(
-          req as CustomRequest,
-          res as Response,
-          next as NextFunction
-        );
-
-        expect(next).toHaveBeenCalledWith(customError);
       });
     });
   });

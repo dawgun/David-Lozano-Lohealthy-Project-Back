@@ -13,7 +13,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\"userName\": \"Nachus\", \"email\": \"nachus\", \"password\": \"123456\", \"repeat_password\": \"123456\"}",
+          "raw": "{\"userName\": \"dawgun\", \"email\": \"dawgun@hotmail.com\", \"password\": \"lohealthy\", \"repeat_password\": \"lohealthy\"}",
           "options": {
             "raw": {
               "language": "json"
@@ -47,7 +47,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"userName\": \"Nachus\",\n    \"password\": \"123456\"\n}",
+          "raw": "{\n    \"userName\": \"dawgun\",\n    \"password\": \"lohealthy\"\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -83,6 +83,59 @@
           "raw": "{{APISERVER}}games/delete/id",
           "host": ["{{APISERVER}}games"],
           "path": ["delete", "id"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Game",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzMTliZTA1NTk1OGFkYzM3YWMwMzBhNCIsInVzZXJOYW1lIjoiZGF3Z3VuIiwiaW1hZ2UiOiJodHRwczovL3d3dy5zZWVrcG5nLmNvbS9wbmcvZnVsbC8yNDUtMjQ1NDYwMl90YW5uaS1jaGFuZC1kZWZhdWx0LXVzZXItaW1hZ2UtcG5nLnBuZyIsImlhdCI6MTY2MjYzMTQ0Nn0.JgC_oIu0U3bWrJh_vPCmB48gsMM8xaxdwi5s6OFo6zI",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "title",
+              "value": "ZeldaRandom13",
+              "type": "text"
+            },
+            {
+              "key": "image",
+              "type": "file",
+              "src": "/Users/dawgun/Desktop/2ff48d36e670e4ecc0fda90df16c45d6.jpeg"
+            },
+            {
+              "key": "players",
+              "value": "Two players",
+              "type": "text"
+            },
+            {
+              "key": "genre",
+              "value": "RPG",
+              "type": "text"
+            },
+            {
+              "key": "synopsis",
+              "value": "En un lugar muy muy lejano",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{APISERVER}}games/create",
+          "host": ["{{APISERVER}}games"],
+          "path": ["create"]
         }
       },
       "response": []

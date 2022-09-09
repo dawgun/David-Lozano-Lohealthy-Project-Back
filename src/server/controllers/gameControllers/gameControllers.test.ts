@@ -1,4 +1,6 @@
 import { NextFunction, Request, Response } from "express";
+import fs from "fs/promises";
+import path from "path";
 import Game from "../../../database/models/Game";
 import User from "../../../database/models/User";
 import CustomRequest from "../../../types/customRequest";
@@ -6,13 +8,28 @@ import CustomJwtPayload from "../../../types/payload";
 import CustomError from "../../../utils/CustomError/CustomError";
 import { createGame, deleteGame, getAllGames } from "./gameControllers";
 
-describe("Given the gameControllers", () => {
-  const res: Partial<Response> = {
+let mockFs: () => Promise<void>;
+let res: Partial<Response>;
+let next: Partial<NextFunction>;
+
+beforeAll(() => {
+  res = {
     status: jest.fn().mockReturnThis(),
     json: jest.fn(),
   };
-  const next = jest.fn() as Partial<NextFunction>;
+  next = jest.fn();
+});
 
+beforeEach(() => {
+  mockFs = jest.fn();
+  fs.rename = mockFs;
+});
+
+afterAll(() => {
+  jest.clearAllMocks();
+});
+
+describe("Given the gameControllers", () => {
   describe("When it's called getAllGames controller", () => {
     const req: Partial<Request> = {};
 
@@ -86,12 +103,12 @@ describe("Given the gameControllers", () => {
     });
   });
 
-  describe("When deleteRobot it's called", () => {
+  describe("When deleteCreate it's called", () => {
     describe("And it receives a response with correct id", () => {
       const req: Partial<Request> = { params: { idGame: "1" } };
 
-      test("Then it should call the response method status with 202", async () => {
-        const status = 202;
+      test("Then it should call the response method status with 200", async () => {
+        const status = 200;
 
         Game.findById = jest.fn();
         Game.deleteOne = jest.fn();
@@ -115,7 +132,7 @@ describe("Given the gameControllers", () => {
 
     describe("And it receives a response with wrong id", () => {
       test("Then it should call next function with an error", async () => {
-        const req: Partial<Request> = { params: { idRobot: "23" } };
+        const req: Partial<Request> = { params: { idGame: "23" } };
         const customError = new Error();
 
         Game.findById = jest.fn().mockRejectedValue(new Error());
@@ -144,6 +161,7 @@ describe("Given the gameControllers", () => {
     };
 
     const fileRequest = {
+      filename: "zeldarandom2",
       originalname: "zeldarandom2.jpg",
     } as Partial<Express.Multer.File>;
 
@@ -164,6 +182,41 @@ describe("Given the gameControllers", () => {
     });
 
     describe("And it receives a response with a game", () => {
+      const folderPath = "uploads";
+      const filename = "zeldarandom2";
+
+      test("Then it should call fs.rename with two filepath", async () => {
+        const oldNamePath = "uploads/zeldarandom2";
+
+        await createGame(
+          req as CustomRequest,
+          res as Response,
+          next as NextFunction
+        );
+
+        expect(mockFs).toHaveBeenCalledWith(
+          oldNamePath,
+          expect.stringContaining(filename)
+        );
+      });
+
+      test("Then it should call path.join two times and folderpath with filename", async () => {
+        const pathJoinSpy = jest.spyOn(path, "join");
+
+        await createGame(
+          req as CustomRequest,
+          res as Response,
+          next as NextFunction
+        );
+
+        expect(pathJoinSpy).toHaveBeenCalledTimes(2);
+        expect(pathJoinSpy).toHaveBeenCalledWith(folderPath, filename);
+        expect(pathJoinSpy).toHaveBeenCalledWith(
+          folderPath,
+          expect.stringContaining(filename)
+        );
+      });
+
       test("Then call the response method status with 201", async () => {
         const expectedStatus = 201;
 

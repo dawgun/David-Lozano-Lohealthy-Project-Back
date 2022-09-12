@@ -37,17 +37,21 @@ export const getAllGames = async (
 };
 
 export const deleteGame = async (
-  req: Request,
+  req: CustomRequest,
   res: Response,
   next: NextFunction
 ) => {
   const { idGame } = req.params;
+  const userId = req.payload.id;
 
   try {
-    await Game.findById({ _id: idGame });
-    await Game.deleteOne({ _id: idGame });
-
-    res.status(200).json({ message: "Game has been deleted" });
+    await Game.findByIdAndDelete({ _id: idGame });
+    const user = await User.findById(userId);
+    const newGameList = user.games.filter(
+      (userGameId) => `${userGameId}` !== idGame
+    );
+    user.games = newGameList;
+    user.save();
   } catch (error) {
     const customError = new CustomError(
       404,
@@ -55,7 +59,10 @@ export const deleteGame = async (
       "Error deleting game"
     );
     next(customError);
+    return;
   }
+
+  res.status(200).json({ message: "Game has been deleted" });
 };
 
 export const createGame = async (

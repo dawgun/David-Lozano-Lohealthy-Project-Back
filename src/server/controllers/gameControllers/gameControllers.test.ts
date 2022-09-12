@@ -96,16 +96,32 @@ describe("Given the gameControllers", () => {
   });
 
   describe("When deleteCreate it's called", () => {
+    const payloadRequest: CustomJwtPayload = {
+      userName: "Nachus",
+      id: "631096a08ada91dad208fb07",
+      image: "nachus.jpg",
+    };
+
     describe("And it receives a response with correct id", () => {
-      const req: Partial<Request> = { params: { idGame: "1" } };
+      const req: Partial<CustomRequest> = {
+        params: { idGame: "1" },
+        payload: payloadRequest,
+      };
 
       test("Then it should call the response method status with 200", async () => {
         const status = 200;
 
-        Game.findById = jest.fn();
-        Game.deleteOne = jest.fn();
+        Game.findByIdAndDelete = jest.fn();
+        User.findById = jest.fn().mockResolvedValue({
+          games: ["1"],
+          save: jest.fn(),
+        });
 
-        await deleteGame(req as Request, res as Response, next as NextFunction);
+        await deleteGame(
+          req as CustomRequest,
+          res as Response,
+          next as NextFunction
+        );
 
         expect(res.status).toHaveBeenCalledWith(status);
       });
@@ -113,10 +129,17 @@ describe("Given the gameControllers", () => {
       test("Then it should call the response method json with message", async () => {
         const messageJson = { message: "Game has been deleted" };
 
-        Game.findById = jest.fn();
-        Game.deleteOne = jest.fn();
+        Game.findByIdAndDelete = jest.fn();
+        User.findById = jest.fn().mockResolvedValue({
+          games: ["1"],
+          save: jest.fn(),
+        });
 
-        await deleteGame(req as Request, res as Response, next as NextFunction);
+        await deleteGame(
+          req as CustomRequest,
+          res as Response,
+          next as NextFunction
+        );
 
         expect(res.json).toHaveBeenCalledWith(messageJson);
       });
@@ -124,13 +147,23 @@ describe("Given the gameControllers", () => {
 
     describe("And it receives a response with wrong id", () => {
       test("Then it should call next function with an error", async () => {
-        const req: Partial<Request> = { params: { idGame: "23" } };
+        const req: Partial<CustomRequest> = {
+          params: { idGame: "23" },
+          payload: payloadRequest,
+        };
         const customError = new Error();
 
-        Game.findById = jest.fn().mockRejectedValue(new Error());
-        Game.deleteOne = jest.fn();
+        Game.findByIdAndDelete = jest.fn().mockRejectedValue(new Error());
+        User.findById = jest.fn().mockResolvedValue({
+          games: [],
+          save: jest.fn(),
+        });
 
-        await deleteGame(req as Request, res as Response, next as NextFunction);
+        await deleteGame(
+          req as CustomRequest,
+          res as Response,
+          next as NextFunction
+        );
 
         expect(next).toHaveBeenCalledWith(customError);
       });

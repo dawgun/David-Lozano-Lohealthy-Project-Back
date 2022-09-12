@@ -36,6 +36,27 @@ export const getAllGames = async (
   res.status(200).json({ games });
 };
 
+export const getGamesByUser = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  const userId = req.payload.id;
+
+  try {
+    const userGameList = await User.findById(userId).populate("games");
+
+    res.status(200).json({ games: userGameList.games });
+  } catch (error) {
+    const customError = new CustomError(
+      404,
+      error.message,
+      "Error deleting game"
+    );
+    next(customError);
+  }
+};
+
 export const deleteGame = async (
   req: CustomRequest,
   res: Response,

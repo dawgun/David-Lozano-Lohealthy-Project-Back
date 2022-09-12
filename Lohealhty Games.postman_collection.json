@@ -13,7 +13,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\"userName\": \"dawgun\", \"email\": \"dawgun@hotmail.com\", \"password\": \"lohealthy\", \"repeat_password\": \"lohealthy\"}",
+          "raw": "{\"userName\": \"tester\", \"email\": \"test@hotmail.com\", \"password\": \"tester\", \"repeat_password\": \"tester\"}",
           "options": {
             "raw": {
               "language": "json"
@@ -47,7 +47,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"userName\": \"dawgun\",\n    \"password\": \"lohealthy\"\n}",
+          "raw": "{\n    \"userName\": \"Nachus\",\n    \"password\": \"123456\"\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -95,7 +95,7 @@
           "bearer": [
             {
               "key": "token",
-              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzMTliZTA1NTk1OGFkYzM3YWMwMzBhNCIsInVzZXJOYW1lIjoiZGF3Z3VuIiwiaW1hZ2UiOiJodHRwczovL3d3dy5zZWVrcG5nLmNvbS9wbmcvZnVsbC8yNDUtMjQ1NDYwMl90YW5uaS1jaGFuZC1kZWZhdWx0LXVzZXItaW1hZ2UtcG5nLnBuZyIsImlhdCI6MTY2MjYzMTQ0Nn0.JgC_oIu0U3bWrJh_vPCmB48gsMM8xaxdwi5s6OFo6zI",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzMWYxOTZlNmFlNDVhYzZkOTJjODBjZSIsInVzZXJOYW1lIjoidGVzdGVyIiwiaW1hZ2UiOiJodHRwczovL3d3dy5zZWVrcG5nLmNvbS9wbmcvZnVsbC8yNDUtMjQ1NDYwMl90YW5uaS1jaGFuZC1kZWZhdWx0LXVzZXItaW1hZ2UtcG5nLnBuZyIsImlhdCI6MTY2Mjk4MjUyMH0.TnEpZNjCo2KYs4fxs4IPeCBuOwM3Ohw-_hFIqlVxAGQ",
               "type": "string"
             }
           ]
@@ -107,13 +107,13 @@
           "formdata": [
             {
               "key": "title",
-              "value": "ZeldaRandom13",
+              "value": "ZeldaRandomTest",
               "type": "text"
             },
             {
               "key": "image",
               "type": "file",
-              "src": "/Users/dawgun/Desktop/2ff48d36e670e4ecc0fda90df16c45d6.jpeg"
+              "src": "/Users/dawgun/Desktop/13225.webp"
             },
             {
               "key": "players",
@@ -127,7 +127,7 @@
             },
             {
               "key": "synopsis",
-              "value": "En un lugar muy muy lejano",
+              "value": "En un lugar muy muy lejano habia una princesa llena de peligros donde aguardaba que le salvase un increible heroe",
               "type": "text"
             }
           ]
@@ -136,6 +136,42 @@
           "raw": "{{APISERVER}}games/create",
           "host": ["{{APISERVER}}games"],
           "path": ["create"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Game by id",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{APISERVER}}games/631e46e658d114c1f0123912",
+          "host": ["{{APISERVER}}games"],
+          "path": ["631e46e658d114c1f0123912"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Games By User Id",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzMTA5NmEwOGFkYTkxZGFkMjA4ZmIwNyIsInVzZXJOYW1lIjoiTmFjaHVzIiwiaW1hZ2UiOiJodHRwczovL3d3dy5zZWVrcG5nLmNvbS9wbmcvZnVsbC8yNDUtMjQ1NDYwMl90YW5uaS1jaGFuZC1kZWZhdWx0LXVzZXItaW1hZ2UtcG5nLnBuZyIsImlhdCI6MTY2Mjk4MzgyM30.yzEnmO9nLwfoQkOLrZDTPwInfW9EET3hSu9J8LBzpDk",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{APISERVER}}games/my-list",
+          "host": ["{{APISERVER}}games"],
+          "path": ["my-list"]
         }
       },
       "response": []

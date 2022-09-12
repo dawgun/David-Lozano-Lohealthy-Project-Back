@@ -22,6 +22,6 @@ gameRouter.post(
   imageStorage,
   createGame
 );
-gameRouter.delete("/delete/:idGame", deleteGame);
+gameRouter.delete("/delete/:idGame", userAuthentification, deleteGame);
 
 export default gameRouter;

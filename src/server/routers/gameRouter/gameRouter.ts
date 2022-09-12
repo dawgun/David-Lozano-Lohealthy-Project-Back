@@ -16,8 +16,8 @@ const gameRouter = express.Router();
 const upload = multer({ dest: "uploads/", limits: { fileSize: 5000000 } });
 
 gameRouter.get("/", getAllGames);
-gameRouter.get("/:idGame", getGameById);
 gameRouter.get("/my-list", userAuthentification, getGamesByUser);
+gameRouter.get("/:idGame", getGameById);
 
 gameRouter.post(
   "/create",

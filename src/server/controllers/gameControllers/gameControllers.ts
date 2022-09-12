@@ -59,7 +59,7 @@ export const getGamesByUser = async (
 };
 
 export const getGameById = async (
-  req: CustomRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {
@@ -71,6 +71,7 @@ export const getGameById = async (
     });
 
     res.status(200).json({ game });
+    return;
   } catch (error) {
     const customError = new CustomError(404, error.message, "Game not found");
     next(customError);

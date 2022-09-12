@@ -8,6 +8,7 @@ import {
   createGame,
   deleteGame,
   getAllGames,
+  getGameById,
   getGamesByUser,
 } from "./gameControllers";
 
@@ -296,6 +297,55 @@ describe("Given the gameControllers", () => {
         );
 
         await getGamesByUser(
+          req as CustomRequest,
+          res as Response,
+          next as NextFunction
+        );
+
+        expect(next).toHaveBeenCalledWith(errorMongooseGame);
+      });
+    });
+  });
+
+  describe("When getGamesById it's called", () => {
+    const req = { params: { idGame: "1" } } as Partial<Request>;
+    const mockGame = { game: { title: "Commandos" } };
+
+    describe("And database return a user with a game with title 'Commandos'", () => {
+      test("Then call the response method status with 200", async () => {
+        Game.findById = jest.fn().mockReturnThis();
+        Game.populate = jest.fn().mockResolvedValue(mockGame);
+
+        await getGameById(
+          req as Request,
+          res as Response,
+          next as NextFunction
+        );
+
+        expect(res.status).toHaveBeenCalledWith(200);
+      });
+
+      test("Then call the response method status with 200", async () => {
+        Game.findById = jest.fn().mockReturnThis();
+        Game.populate = jest.fn().mockResolvedValue(mockGame);
+
+        await getGameById(
+          req as Request,
+          res as Response,
+          next as NextFunction
+        );
+
+        expect(res.json).toHaveBeenCalledWith({ game: mockGame });
+      });
+    });
+
+    describe("And database return an error", () => {
+      test("Then call the next method with an error", async () => {
+        Game.findById = jest.fn().mockReturnThis();
+        Game.populate = jest.fn().mockRejectedValue(mockGame);
+        const errorMongooseGame = new CustomError(404, "", "Game not found");
+
+        await getGameById(
           req as CustomRequest,
           res as Response,
           next as NextFunction

@@ -4,7 +4,12 @@ import User from "../../../database/models/User";
 import CustomRequest from "../../../types/customRequest";
 import CustomJwtPayload from "../../../types/payload";
 import CustomError from "../../../utils/CustomError/CustomError";
-import { createGame, deleteGame, getAllGames } from "./gameControllers";
+import {
+  createGame,
+  deleteGame,
+  getAllGames,
+  getGamesByUser,
+} from "./gameControllers";
 
 let res: Partial<Response>;
 let next: Partial<NextFunction>;
@@ -242,6 +247,61 @@ describe("Given the gameControllers", () => {
         );
 
         expect(next).toHaveBeenCalledWith(customError);
+      });
+    });
+  });
+
+  describe("When getGamesByUser it's called", () => {
+    const req = { payload: { id: "1" } } as Partial<CustomRequest>;
+
+    describe("And database return a user with list of games", () => {
+      test("Then call the response method status with 200", async () => {
+        const mockGameList = { games: ["1"] };
+        User.findById = jest.fn().mockReturnThis();
+        User.populate = jest.fn().mockResolvedValue(mockGameList);
+
+        await getGamesByUser(
+          req as CustomRequest,
+          res as Response,
+          next as NextFunction
+        );
+
+        expect(res.status).toHaveBeenCalledWith(200);
+      });
+
+      test("Then call the response method status with 200", async () => {
+        const mockGameList = { games: ["1"] };
+        User.findById = jest.fn().mockReturnThis();
+        User.populate = jest.fn().mockResolvedValue(mockGameList);
+
+        await getGamesByUser(
+          req as CustomRequest,
+          res as Response,
+          next as NextFunction
+        );
+
+        expect(res.json).toHaveBeenCalledWith({ games: mockGameList.games });
+      });
+    });
+
+    describe("And database return an error", () => {
+      test("Then call the next method with an error", async () => {
+        const mockGameList = { games: ["1"] };
+        User.findById = jest.fn().mockReturnThis();
+        User.populate = jest.fn().mockRejectedValue(mockGameList);
+        const errorMongooseGame = new CustomError(
+          404,
+          "",
+          "Error getting games of user"
+        );
+
+        await getGamesByUser(
+          req as CustomRequest,
+          res as Response,
+          next as NextFunction
+        );
+
+        expect(next).toHaveBeenCalledWith(errorMongooseGame);
       });
     });
   });

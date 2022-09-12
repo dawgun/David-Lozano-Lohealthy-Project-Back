@@ -47,11 +47,12 @@ export const getGamesByUser = async (
     const userGameList = await User.findById(userId).populate("games");
 
     res.status(200).json({ games: userGameList.games });
+    return;
   } catch (error) {
     const customError = new CustomError(
       404,
       error.message,
-      "Error deleting game"
+      "Error getting games of user"
     );
     next(customError);
   }

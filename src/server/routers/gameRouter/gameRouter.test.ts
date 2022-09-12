@@ -1,6 +1,6 @@
 import request from "supertest";
 import { MongoMemoryServer } from "mongodb-memory-server";
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
 import app from "../..";
 import connectDB from "../../../database";
 import Game from "../../../database/models/Game";
@@ -25,6 +25,7 @@ const userForCreate = {
 };
 
 let lohealthyToken: string;
+let game: Document;
 
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
@@ -32,7 +33,7 @@ beforeAll(async () => {
 
   await connectDB(mongoURL);
 
-  await Game.create(gameTest);
+  game = await Game.create(gameTest);
   const newUser = await User.create(userForCreate);
 
   const mockPayload = {
@@ -96,6 +97,20 @@ describe("Given the gameRouter", () => {
           .expect(400);
 
         expect(body).toHaveProperty("error", message);
+      });
+    });
+  });
+
+  describe("When use the endpoint GET /games/:idGame", () => {
+    describe("And it receives a request", () => {
+      test("Then it should response with an status 200 a game with title 'Legend of Zelda'", async () => {
+        const expectedTitle = "Legend of Zelda";
+
+        const { body } = await request(app)
+          .get(`/games/${game.id}`)
+          .expect(200);
+
+        expect(body.game.title).toBe(expectedTitle);
       });
     });
   });

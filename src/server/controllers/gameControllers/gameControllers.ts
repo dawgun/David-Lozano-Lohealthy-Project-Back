@@ -58,6 +58,25 @@ export const getGamesByUser = async (
   }
 };
 
+export const getGameById = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  const { idGame } = req.params;
+
+  try {
+    const game = await Game.findById(idGame).populate("owner", {
+      userName: true,
+    });
+
+    res.status(200).json({ game });
+  } catch (error) {
+    const customError = new CustomError(404, error.message, "Game not found");
+    next(customError);
+  }
+};
+
 export const deleteGame = async (
   req: CustomRequest,
   res: Response,

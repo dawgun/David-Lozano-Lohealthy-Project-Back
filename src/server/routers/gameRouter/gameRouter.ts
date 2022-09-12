@@ -6,6 +6,7 @@ import {
   createGame,
   deleteGame,
   getAllGames,
+  getGameById,
   getGamesByUser,
 } from "../../controllers/gameControllers/gameControllers";
 import imageStorage from "../../middlewares/imageStorage/imageStorage";
@@ -15,7 +16,9 @@ const gameRouter = express.Router();
 const upload = multer({ dest: "uploads/", limits: { fileSize: 5000000 } });
 
 gameRouter.get("/", getAllGames);
+gameRouter.get("/:idGame", getGameById);
 gameRouter.get("/my-list", userAuthentification, getGamesByUser);
+
 gameRouter.post(
   "/create",
   upload.single("image"),

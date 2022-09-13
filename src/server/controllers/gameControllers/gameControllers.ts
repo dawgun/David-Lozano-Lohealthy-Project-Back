@@ -20,7 +20,8 @@ export const getAllGames = async (
 
   const checkPages = {
     isPreviousPage: pageOptions.page !== 0,
-    isNextPage: !(countGames <= pageOptions.limit * (pageOptions.page + 1)),
+    isNextPage: countGames >= pageOptions.limit * (pageOptions.page + 1),
+    totalPages: Math.ceil(countGames / pageOptions.limit),
   };
 
   try {

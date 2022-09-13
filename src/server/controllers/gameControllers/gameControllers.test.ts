@@ -58,6 +58,7 @@ describe("Given the gameControllers", () => {
             games: mockGameList,
             isNextPage: true,
             isPreviousPage: false,
+            totalPages: 2,
           },
         };
 

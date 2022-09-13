@@ -58,7 +58,7 @@ describe("Given the gameRouter", () => {
         const gamelistLength = 1;
         const { body } = await request(app).get("/games").expect(200);
 
-        expect(body.games).toHaveLength(gamelistLength);
+        expect(body.games.games).toHaveLength(gamelistLength);
       });
     });
   });

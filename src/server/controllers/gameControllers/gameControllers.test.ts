@@ -29,12 +29,18 @@ afterAll(() => {
 
 describe("Given the gameControllers", () => {
   describe("When it's called getAllGames controller", () => {
-    const req: Partial<Request> = {};
+    const req: Partial<Request> = { query: { page: "0" } };
 
     describe("And database return a list of games", () => {
       test("Then call the response method status with 200", async () => {
         const mockGameList = [{ game: "" }];
-        Game.find = jest.fn().mockResolvedValue(mockGameList);
+        Game.countDocuments = jest.fn().mockResolvedValue(10);
+
+        Game.find = jest.fn().mockReturnValue({
+          skip: jest.fn().mockReturnValue({
+            limit: jest.fn().mockReturnValue(mockGameList),
+          }),
+        });
 
         await getAllGames(
           req as Request,
@@ -47,7 +53,20 @@ describe("Given the gameControllers", () => {
 
       test("Then call the response method json with a list of games", async () => {
         const mockGameList = [{ game: "" }];
-        Game.find = jest.fn().mockResolvedValue(mockGameList);
+        const expectedResponse = {
+          games: {
+            games: mockGameList,
+            isNextPage: true,
+            isPreviousPage: false,
+          },
+        };
+
+        Game.countDocuments = jest.fn().mockResolvedValue(10);
+        Game.find = jest.fn().mockReturnValue({
+          skip: jest.fn().mockReturnValue({
+            limit: jest.fn().mockReturnValue(mockGameList),
+          }),
+        });
 
         await getAllGames(
           req as Request,
@@ -55,7 +74,7 @@ describe("Given the gameControllers", () => {
           next as NextFunction
         );
 
-        expect(res.json).toHaveBeenCalledWith({ games: mockGameList });
+        expect(res.json).toHaveBeenCalledWith(expectedResponse);
       });
     });
 
@@ -66,9 +85,14 @@ describe("Given the gameControllers", () => {
           "There isn't games in database",
           "Games not found"
         );
+        Game.countDocuments = jest.fn().mockResolvedValue(10);
 
         const mockGameList: void[] = [];
-        Game.find = jest.fn().mockResolvedValue(mockGameList);
+        Game.find = jest.fn().mockReturnValue({
+          skip: jest.fn().mockReturnValue({
+            limit: jest.fn().mockReturnValue(mockGameList),
+          }),
+        });
 
         await getAllGames(
           req as Request,
@@ -88,7 +112,13 @@ describe("Given the gameControllers", () => {
           "Error getting list of games"
         );
 
-        Game.find = jest.fn().mockRejectedValue("");
+        Game.countDocuments = jest.fn().mockResolvedValue(10);
+
+        Game.find = jest.fn().mockReturnValue({
+          skip: jest.fn().mockReturnValue({
+            limit: jest.fn().mockRejectedValue("error"),
+          }),
+        });
 
         await getAllGames(
           req as Request,

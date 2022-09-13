@@ -11,8 +11,22 @@ export const getAllGames = async (
 ) => {
   let games;
 
+  const pageOptions = {
+    page: Number(req.query.page) || 0,
+    limit: 9,
+  };
+
+  const countGames: number = await Game.countDocuments();
+
+  const checkPages = {
+    isPreviousPage: pageOptions.page !== 0,
+    isNextPage: !(countGames <= pageOptions.limit * (pageOptions.page + 1)),
+  };
+
   try {
-    games = await Game.find();
+    games = await Game.find()
+      .skip(pageOptions.page * pageOptions.limit)
+      .limit(pageOptions.limit);
 
     if (games.length === 0) {
       const errorGame = new CustomError(
@@ -33,7 +47,7 @@ export const getAllGames = async (
     return;
   }
 
-  res.status(200).json({ games });
+  res.status(200).json({ games: { ...checkPages, games } });
 };
 
 export const getGamesByUser = async (

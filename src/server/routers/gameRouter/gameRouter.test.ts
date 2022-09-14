@@ -7,6 +7,35 @@ import Game from "../../../database/models/Game";
 import User from "../../../database/models/User";
 import { createToken } from "../../../utils/auth/auth";
 
+jest.mock("@supabase/supabase-js", () => ({
+  createClient: () => ({
+    storage: {
+      from: () => ({
+        upload: jest.fn().mockResolvedValue({}),
+        getPublicUrl: () => ({
+          publicURL: "Public Url",
+        }),
+      }),
+    },
+  }),
+}));
+
+jest.mock("fs/promises", () => ({
+  ...jest.requireActual("fs/promises"),
+  readFile: jest.fn(),
+  rename: jest.fn(),
+}));
+
+jest.mock("sharp", () => () => ({
+  resize: jest.fn().mockReturnValue({
+    jpeg: jest.fn().mockReturnValue({
+      toFormat: jest.fn().mockReturnValue({
+        toFile: jest.fn(),
+      }),
+    }),
+  }),
+}));
+
 let mongoServer: MongoMemoryServer;
 const gameTest = {
   title: "Legend of Zelda",
@@ -49,6 +78,7 @@ afterAll(async () => {
   Game.deleteMany();
   await mongoose.connection.close();
   await mongoServer.stop();
+  jest.clearAllMocks();
 });
 
 describe("Given the gameRouter", () => {
@@ -77,7 +107,7 @@ describe("Given the gameRouter", () => {
           .field("players", "one player")
           .field("synopsis", "game fabulous")
           .attach("image", Buffer.from("mockImageString", "utf-8"), {
-            filename: "game",
+            filename: "game1",
           })
           .expect(201);
 
@@ -94,6 +124,9 @@ describe("Given the gameRouter", () => {
           .set("Authorization", `Bearer ${lohealthyToken}`)
           .type("multipart/formd-ata")
           .field("title", "mario")
+          .attach("image", Buffer.from("image", "utf-8"), {
+            filename: "games.jpg",
+          })
           .expect(400);
 
         expect(body).toHaveProperty("error", message);

@@ -10,6 +10,7 @@ import {
   getGamesByUser,
 } from "../../controllers/gameControllers/gameControllers";
 import imageStorage from "../../middlewares/imageStorage/imageStorage";
+import resizeSharp from "../../middlewares/resizeSharp/resizeSharp";
 import userAuthentification from "../../middlewares/userAuthentification/userAuthentification";
 
 const gameRouter = express.Router();
@@ -22,6 +23,7 @@ gameRouter.get("/:idGame", getGameById);
 gameRouter.post(
   "/create",
   upload.single("image"),
+  resizeSharp,
   validate(createGameValidation, {}, { abortEarly: false }),
   userAuthentification,
   imageStorage,

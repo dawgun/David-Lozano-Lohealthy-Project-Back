@@ -48,7 +48,7 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
-  await fs.unlink("uploads/1000-zeldarandom2.jpg");
+  await fs.unlink("uploads/1000-zeldarandom2");
   jest.clearAllMocks();
 });
 

@@ -7,7 +7,7 @@ let mockToFile = jest.fn();
 
 jest.mock("sharp", () => () => ({
   resize: jest.fn().mockReturnValue({
-    jpeg: jest.fn().mockReturnValue({
+    webp: jest.fn().mockReturnValue({
       toFormat: jest.fn().mockReturnValue({
         toFile: mockToFile,
       }),

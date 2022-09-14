@@ -13,7 +13,7 @@ export const getAllGames = async (
 
   const pageOptions = {
     page: Number(req.query.page) || 0,
-    limit: 9,
+    limit: 8,
   };
 
   const countGames: number = await Game.countDocuments();

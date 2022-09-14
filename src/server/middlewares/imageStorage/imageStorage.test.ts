@@ -32,8 +32,8 @@ const bodyRequest = {
 };
 
 const fileRequest = {
-  filename: "zeldarandom2",
-  originalname: "zeldarandom2.jpg",
+  filename: "_horizontal_zeldarandom2.webp",
+  originalname: "_vertical_zeldarandom2.webp",
 } as Partial<Express.Multer.File>;
 
 const req = {
@@ -44,11 +44,16 @@ const res = {} as Partial<Response>;
 const next = jest.fn() as NextFunction;
 
 beforeEach(async () => {
-  await fs.writeFile("uploads/zeldarandom2", "zelda");
+  await fs.writeFile(
+    "uploads/_horizontal_zeldarandom2.webp",
+    "zeldahorizontal"
+  );
+  await fs.writeFile("uploads/_vertical_zeldarandom2.webp", "zeldavertical");
 });
 
 afterAll(async () => {
-  await fs.unlink("uploads/1000-zeldarandom2");
+  await fs.unlink("uploads/1000-_horizontal_zeldarandom2.webp");
+  await fs.unlink("uploads/1000-_vertical_zeldarandom2.webp");
   jest.clearAllMocks();
 });
 
@@ -56,7 +61,7 @@ describe("Given the imageStorage middleware", () => {
   describe("When it's called with correct request with image game", () => {
     describe("And image is uploaded to supabase", () => {
       test("Then next then should be called", async () => {
-        jest.spyOn(Date, "now").mockReturnValueOnce(1000);
+        jest.spyOn(Date, "now").mockReturnValue(1000);
 
         await imageStorage(
           req as CustomRequest,

@@ -28,7 +28,7 @@ jest.mock("fs/promises", () => ({
 
 jest.mock("sharp", () => () => ({
   resize: jest.fn().mockReturnValue({
-    jpeg: jest.fn().mockReturnValue({
+    webp: jest.fn().mockReturnValue({
       toFormat: jest.fn().mockReturnValue({
         toFile: jest.fn(),
       }),

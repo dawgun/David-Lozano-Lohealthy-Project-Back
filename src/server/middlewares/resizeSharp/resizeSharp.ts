@@ -8,12 +8,19 @@ const resizeSharp = async (req: Request, res: Response, next: NextFunction) => {
 
   try {
     await sharp(path.join("uploads", filename))
-      .resize(320, 180, { fit: "contain" })
-      .jpeg({ quality: 90 })
+      .resize(320, 180, { fit: "cover" })
+      .webp({ quality: 90 })
       .toFormat("webp")
-      .toFile(path.join("uploads", `_${originalname}.webp`));
+      .toFile(path.join("uploads", `_horizontal_${originalname}.webp`));
 
-    req.file.filename = `_${originalname}.webp`;
+    await sharp(path.join("uploads", filename))
+      .resize(90, 160, { fit: "cover" })
+      .webp({ quality: 90 })
+      .toFormat("webp")
+      .toFile(path.join("uploads", `_vertical_${originalname}.webp`));
+
+    req.file.filename = `_horizontal_${originalname}.webp`;
+    req.file.originalname = `_vertical_${originalname}.webp`;
 
     next();
   } catch (error) {

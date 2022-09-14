@@ -8,23 +8,36 @@ const imageStorage = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { filename } = req.file;
+  const { filename, originalname } = req.file;
   const storage = supabase.storage.from("lohealthy-games");
+  const newHorizontalPicture = `${Date.now()}-${filename}`;
+  const newVerticalPicture = `${Date.now()}-${originalname}`;
 
-  const newPictureName = `${Date.now()}-${filename}`;
   await fs.rename(
     path.join("uploads", filename),
-    path.join("uploads", newPictureName)
+    path.join("uploads", newHorizontalPicture)
   );
 
-  const readFile = await fs.readFile(path.join("uploads", newPictureName));
+  await fs.rename(
+    path.join("uploads", originalname),
+    path.join("uploads", newVerticalPicture)
+  );
 
-  await storage.upload(newPictureName, readFile);
+  const readHorizontalFile = await fs.readFile(
+    path.join("uploads", newHorizontalPicture)
+  );
+  const readVerticalFile = await fs.readFile(
+    path.join("uploads", newVerticalPicture)
+  );
 
-  const imageUrl = storage.getPublicUrl(newPictureName);
+  await storage.upload(newHorizontalPicture, readHorizontalFile);
+  await storage.upload(newVerticalPicture, readVerticalFile);
 
-  req.body.image = newPictureName;
-  req.body.backupImage = imageUrl.publicURL;
+  const imageHorizontalUrl = storage.getPublicUrl(newHorizontalPicture);
+  const imageVerticalUrl = storage.getPublicUrl(newVerticalPicture);
+
+  req.body.image = imageHorizontalUrl.publicURL;
+  req.body.backupImage = imageVerticalUrl.publicURL;
 
   next();
 };

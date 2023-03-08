@@ -3,29 +3,24 @@ import Game from "../../../database/models/Game";
 import User from "../../../database/models/User";
 import CustomRequest from "../../../types/customRequest";
 import CustomError from "../../../utils/CustomError/CustomError";
+import gamePagination from "../../../utils/gamePagination/gamePagination";
 
 export const getAllGames = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  let games;
-
-  const pageOptions = {
-    page: Number(req.query.page) || 0,
-    limit: 8,
-  };
-
-  const countGames: number = await Game.countDocuments();
-
-  const checkPages = {
-    isPreviousPage: pageOptions.page !== 0,
-    isNextPage: countGames >= pageOptions.limit * (pageOptions.page + 1),
-    totalPages: Math.ceil(countGames / pageOptions.limit),
-  };
-
   try {
-    games = await Game.find()
+    const pageOptions = {
+      page: Number(req.query.page) || 0,
+      limit: 8,
+    };
+
+    const countGames: number = await Game.countDocuments();
+
+    const checkPages = await gamePagination(pageOptions, countGames);
+
+    const games = await Game.find()
       .skip(pageOptions.page * pageOptions.limit)
       .limit(pageOptions.limit);
 
@@ -38,6 +33,7 @@ export const getAllGames = async (
       next(errorGame);
       return;
     }
+    res.status(200).json({ games: { ...checkPages, games } });
   } catch (error) {
     const mongooseError = new CustomError(
       404,
@@ -45,10 +41,7 @@ export const getAllGames = async (
       "Error getting list of games"
     );
     next(mongooseError);
-    return;
   }
-
-  res.status(200).json({ games: { ...checkPages, games } });
 };
 
 export const getGamesByUser = async (
@@ -156,10 +149,18 @@ export const searchGames = async (
   try {
     const { title } = req.query;
     const findQuery = { title: { $regex: title.toString() } };
+    const pageOptions = {
+      page: Number(req.query.page) || 0,
+      limit: 8,
+    };
 
-    const gamesSearched = await Game.find(findQuery);
+    const games = await Game.find(findQuery)
+      .skip(pageOptions.page * pageOptions.limit)
+      .limit(pageOptions.limit);
 
-    res.status(200).json({ games: gamesSearched });
+    const checkPages = await gamePagination(pageOptions, games.length);
+
+    res.status(200).json({ games: { ...checkPages, games } });
   } catch (error) {
     const customError = new CustomError(
       400,

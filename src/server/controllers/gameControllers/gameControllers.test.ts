@@ -270,8 +270,9 @@ describe("Given the gameControllers", () => {
 
     describe("And it receives a response with a game existent", () => {
       test("Then it should call next function with an error", async () => {
-        Game.create = jest.fn().mockRejectedValue(gameCreated);
         const customError = new CustomError(400, "", "Error creating new game");
+
+        Game.create = jest.fn().mockRejectedValue(gameCreated);
 
         await createGame(
           req as CustomRequest,
@@ -394,7 +395,11 @@ describe("Given the gameControllers", () => {
     test("Then should call the method status 200", async () => {
       const statusResponse = 200;
 
-      Game.find = jest.fn().mockResolvedValueOnce("");
+      Game.find = jest.fn().mockReturnValue({
+        skip: jest.fn().mockReturnValue({
+          limit: jest.fn().mockReturnValue(""),
+        }),
+      });
 
       await searchGames(req as Request, res as Response, next as NextFunction);
 
@@ -403,9 +408,20 @@ describe("Given the gameControllers", () => {
 
     test("Then should call the method json with 'Game'", async () => {
       const gameListSearched = ["Game"];
-      const jsonResponse = { games: gameListSearched };
+      const jsonResponse = {
+        games: {
+          isPreviousPage: false,
+          isNextPage: false,
+          totalPages: 1,
+          games: gameListSearched,
+        },
+      };
 
-      Game.find = jest.fn().mockResolvedValueOnce(gameListSearched);
+      Game.find = jest.fn().mockReturnValue({
+        skip: jest.fn().mockReturnValue({
+          limit: jest.fn().mockReturnValue(gameListSearched),
+        }),
+      });
 
       await searchGames(req as Request, res as Response, next as NextFunction);
 
@@ -419,7 +435,13 @@ describe("Given the gameControllers", () => {
           "Mongoose Error",
           "Error searching games"
         );
+
         Game.find = jest.fn().mockRejectedValueOnce(customError);
+        Game.find = jest.fn().mockReturnValue({
+          skip: jest.fn().mockReturnValue({
+            limit: jest.fn().mockRejectedValueOnce(customError),
+          }),
+        });
 
         await searchGames(
           req as Request,

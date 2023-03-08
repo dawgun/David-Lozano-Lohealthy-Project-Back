@@ -10,12 +10,13 @@ import {
   getAllGames,
   getGameById,
   getGamesByUser,
+  searchGames,
 } from "./gameControllers";
 
 let res: Partial<Response>;
 let next: Partial<NextFunction>;
 
-beforeAll(() => {
+beforeEach(() => {
   res = {
     status: jest.fn().mockReturnThis(),
     json: jest.fn(),
@@ -23,7 +24,7 @@ beforeAll(() => {
   next = jest.fn();
 });
 
-afterAll(() => {
+afterEach(() => {
   jest.clearAllMocks();
 });
 
@@ -383,6 +384,50 @@ describe("Given the gameControllers", () => {
         );
 
         expect(next).toHaveBeenCalledWith(errorMongooseGame);
+      });
+    });
+  });
+
+  describe("When searchGames it's called", () => {
+    const req: Partial<Request> = { query: { title: "Banjo" } };
+
+    test("Then should call the method status 200", async () => {
+      const statusResponse = 200;
+
+      Game.find = jest.fn().mockResolvedValueOnce("");
+
+      await searchGames(req as Request, res as Response, next as NextFunction);
+
+      expect(res.status).toHaveBeenCalledWith(statusResponse);
+    });
+
+    test("Then should call the method json with 'Game'", async () => {
+      const gameListSearched = ["Game"];
+      const jsonResponse = { games: gameListSearched };
+
+      Game.find = jest.fn().mockResolvedValueOnce(gameListSearched);
+
+      await searchGames(req as Request, res as Response, next as NextFunction);
+
+      expect(res.json).toHaveBeenCalledWith(jsonResponse);
+    });
+
+    describe("And mongoose throw an error when search game", () => {
+      test("Then should call the function next with an error", async () => {
+        const customError = new CustomError(
+          400,
+          "Mongoose Error",
+          "Error searching games"
+        );
+        Game.find = jest.fn().mockRejectedValueOnce(customError);
+
+        await searchGames(
+          req as Request,
+          res as Response,
+          next as NextFunction
+        );
+
+        expect(next).toHaveBeenCalledWith(customError);
       });
     });
   });

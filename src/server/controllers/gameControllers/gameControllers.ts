@@ -147,3 +147,24 @@ export const createGame = async (
     next(customError);
   }
 };
+
+export const searchGames = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { title } = req.query;
+
+    const gamesSearched = await Game.find({ title: { $regex: title } });
+
+    res.status(200).json({ games: gamesSearched });
+  } catch (error) {
+    const customError = new CustomError(
+      400,
+      error.message,
+      "Error searching games"
+    );
+    next(customError);
+  }
+};

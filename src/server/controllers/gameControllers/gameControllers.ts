@@ -155,8 +155,9 @@ export const searchGames = async (
 ): Promise<void> => {
   try {
     const { title } = req.query;
+    const findQuery = { title: { $regex: title.toString() } };
 
-    const gamesSearched = await Game.find({ title: { $regex: title } });
+    const gamesSearched = await Game.find(findQuery);
 
     res.status(200).json({ games: gamesSearched });
   } catch (error) {

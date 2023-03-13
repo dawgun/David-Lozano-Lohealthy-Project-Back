@@ -148,7 +148,7 @@ export const searchGames = async (
 ): Promise<void> => {
   try {
     const { title } = req.query;
-    const findQuery = { title: { $regex: title.toString() } };
+    const findQuery = { title: { $regex: title.toString(), $options: "i" } };
     const pageOptions = {
       page: Number(req.query.page) || 0,
       limit: 8,

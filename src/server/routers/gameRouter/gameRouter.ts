@@ -9,6 +9,7 @@ import {
   getGameById,
   getGamesByUser,
   searchGames,
+  updateGame,
 } from "../../controllers/gameControllers/gameControllers";
 import imageStorage from "../../middlewares/imageStorage/imageStorage";
 import resizeSharp from "../../middlewares/resizeSharp/resizeSharp";
@@ -31,6 +32,7 @@ gameRouter.post(
   imageStorage,
   createGame
 );
+gameRouter.post("/update", updateGame);
 gameRouter.delete("/delete/:idGame", userAuthentification, deleteGame);
 
 export default gameRouter;

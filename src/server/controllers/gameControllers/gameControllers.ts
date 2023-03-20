@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import Game from "../../../database/models/Game";
 import User from "../../../database/models/User";
 import CustomRequest from "../../../types/customRequest";
+import GameRequest from "../../../types/gameRequest";
+import IGame from "../../../types/iGame";
 import CustomError from "../../../utils/CustomError/CustomError";
 import gamePagination from "../../../utils/gamePagination/gamePagination";
 
@@ -141,11 +143,36 @@ export const createGame = async (
   }
 };
 
+export const updateGame = async (
+  req: GameRequest<Partial<IGame>>,
+  res: Response,
+  next: NextFunction
+) => {
+  const gameModified = req.body;
+  const filtedIdGame = { _id: gameModified.id.toString() };
+
+  try {
+    const newGameUpdated = await Game.findByIdAndUpdate(
+      filtedIdGame,
+      gameModified,
+      { new: true }
+    );
+    res.status(200).json({ game: newGameUpdated });
+  } catch (error) {
+    const customError = new CustomError(
+      400,
+      error.message,
+      "Error updating game"
+    );
+    next(customError);
+  }
+};
+
 export const searchGames = async (
   req: Request,
   res: Response,
   next: NextFunction
-): Promise<void> => {
+) => {
   try {
     const { title } = req.query;
     const findQuery = { title: { $regex: title.toString(), $options: "i" } };

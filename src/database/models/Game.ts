@@ -1,6 +1,7 @@
 import { model, Schema } from "mongoose";
+import IGame from "../../types/iGame";
 
-const gameSchema = new Schema({
+const gameSchema = new Schema<IGame>({
   title: {
     type: String,
     required: true,

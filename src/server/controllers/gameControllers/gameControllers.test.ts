@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import Game from "../../../database/models/Game";
 import User from "../../../database/models/User";
 import CustomRequest from "../../../types/customRequest";
+import GameRequest from "../../../types/gameRequest";
+import IGame from "../../../types/iGame";
 import CustomJwtPayload from "../../../types/payload";
 import CustomError from "../../../utils/CustomError/CustomError";
 import {
@@ -11,6 +13,7 @@ import {
   getGameById,
   getGamesByUser,
   searchGames,
+  updateGame,
 } from "./gameControllers";
 
 let res: Partial<Response>;
@@ -450,6 +453,64 @@ describe("Given the gameControllers", () => {
         );
 
         expect(next).toHaveBeenCalledWith(customError);
+      });
+    });
+  });
+
+  describe("When updateGame it's called", () => {
+    const req: Partial<GameRequest<Partial<IGame>>> = {
+      body: {
+        id: "1241412",
+      },
+    };
+
+    describe("And mongoose return the new game updated", () => {
+      test("Then should call the method status with '200'", async () => {
+        const statusCode = 200;
+
+        Game.findByIdAndUpdate = jest.fn().mockResolvedValue("");
+
+        await updateGame(
+          req as GameRequest<Partial<IGame>>,
+          res as Response,
+          next as NextFunction
+        );
+
+        expect(res.status).toHaveBeenCalledWith(statusCode);
+      });
+
+      test("Then should call the method json with game 'Super Mario' updated", async () => {
+        const gameUpdated: Partial<IGame> = { title: "Super Mario" };
+
+        Game.findByIdAndUpdate = jest.fn().mockResolvedValue(gameUpdated);
+
+        await updateGame(
+          req as GameRequest<Partial<IGame>>,
+          res as Response,
+          next as NextFunction
+        );
+
+        expect(res.json).toHaveBeenCalledWith({ game: gameUpdated });
+      });
+    });
+
+    describe("And mongoose throw an error when try update game", () => {
+      test("Then should call the function next with an error", async () => {
+        const errorMongoose = new CustomError(
+          400,
+          "Mongoose Error",
+          "Error updating game"
+        );
+
+        Game.findByIdAndUpdate = jest.fn().mockRejectedValue(errorMongoose);
+
+        await updateGame(
+          req as GameRequest<Partial<IGame>>,
+          res as Response,
+          next as NextFunction
+        );
+
+        expect(next).toHaveBeenCalledWith(errorMongoose);
       });
     });
   });

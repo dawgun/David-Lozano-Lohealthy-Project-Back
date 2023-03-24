@@ -8,6 +8,11 @@ const imageStorage = async (
   res: Response,
   next: NextFunction
 ) => {
+  if (!req.file) {
+    next();
+    return;
+  }
+
   const { filename, originalname } = req.file;
   const storage = supabase.storage.from("lohealthy-games");
   const newHorizontalPicture = `${Date.now()}-${filename}`;

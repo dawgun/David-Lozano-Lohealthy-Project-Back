@@ -32,7 +32,14 @@ gameRouter.post(
   imageStorage,
   createGame
 );
-gameRouter.post("/update", updateGame);
+gameRouter.patch(
+  "/update",
+  upload.single("image"),
+  resizeSharp,
+  userAuthentification,
+  imageStorage,
+  updateGame
+);
 gameRouter.delete("/delete/:idGame", userAuthentification, deleteGame);
 
 export default gameRouter;

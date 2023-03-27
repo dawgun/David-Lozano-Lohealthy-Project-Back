@@ -11,6 +11,7 @@ import {
   searchGames,
   updateGame,
 } from "../../controllers/gameControllers/gameControllers";
+import gameOwnerChecker from "../../middlewares/gameOwnerChecker/gameOwnerChecker";
 import imageStorage from "../../middlewares/imageStorage/imageStorage";
 import resizeSharp from "../../middlewares/resizeSharp/resizeSharp";
 import userAuthentification from "../../middlewares/userAuthentification/userAuthentification";
@@ -38,8 +39,14 @@ gameRouter.patch(
   resizeSharp,
   userAuthentification,
   imageStorage,
+  gameOwnerChecker,
   updateGame
 );
-gameRouter.delete("/delete/:idGame", userAuthentification, deleteGame);
+gameRouter.delete(
+  "/delete/:idGame",
+  userAuthentification,
+  gameOwnerChecker,
+  deleteGame
+);
 
 export default gameRouter;

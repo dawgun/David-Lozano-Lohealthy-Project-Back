@@ -4,6 +4,11 @@ import sharp from "sharp";
 import CustomError from "../../../utils/CustomError/CustomError";
 
 const resizeSharp = async (req: Request, res: Response, next: NextFunction) => {
+  if (!req.file) {
+    next();
+    return;
+  }
+
   const { filename, originalname } = req.file;
 
   try {

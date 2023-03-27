@@ -73,4 +73,18 @@ describe("Given the imageStorage middleware", () => {
       });
     });
   });
+
+  describe("When it's called without file in request", () => {
+    test("Then function next should to be called", async () => {
+      const requestWithoutFile = {} as Partial<CustomRequest>;
+
+      await imageStorage(
+        requestWithoutFile as CustomRequest,
+        res as Response,
+        next as NextFunction
+      );
+
+      expect(next).toHaveBeenCalled();
+    });
+  });
 });

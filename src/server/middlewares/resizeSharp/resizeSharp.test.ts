@@ -56,4 +56,18 @@ describe("Given the resizeSharp", () => {
       expect(next).toHaveBeenCalledWith(errorSharp);
     });
   });
+
+  describe("When it's called without file in request", () => {
+    test("Then function next should to be called", async () => {
+      const requestWithoutFile = {} as Partial<Request>;
+
+      await resizeSharp(
+        requestWithoutFile as Request,
+        res as Response,
+        next as NextFunction
+      );
+
+      expect(next).toHaveBeenCalled();
+    });
+  });
 });

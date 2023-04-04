@@ -8,7 +8,8 @@ const gameOwnerChecker = async (
   res: Response,
   next: NextFunction
 ) => {
-  const gameRequestId = req.body.id;
+  const { idGame } = req.params;
+  const gameRequestId = req.body.id ?? idGame;
   const ownerId = req.payload.id;
 
   const game = await Game.findById(gameRequestId);

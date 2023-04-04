@@ -8,7 +8,11 @@ import gameOwnerChecker from "./gameOwnerChecker";
 const gameId = "gameid";
 const userId = "123456789012345678901235";
 
-const req = { body: { id: gameId }, payload: { id: userId } } as CustomRequest;
+const req = {
+  body: { id: gameId },
+  payload: { id: userId },
+  params: { idGame: "" },
+} as unknown as CustomRequest;
 const res = {} as Response;
 const next = jest.fn() as NextFunction;
 
@@ -46,6 +50,29 @@ describe("Given the gameOwnerChecker middleware", () => {
 
       await gameOwnerChecker(
         req as CustomRequest,
+        res as Response,
+        next as NextFunction
+      );
+
+      expect(next).toHaveBeenCalledWith();
+    });
+  });
+
+  describe("When it's called with correct id game from params", () => {
+    test("Then should call next function with void", async () => {
+      const correctUserId = userId;
+      const MongooseIdOwner = new mongoose.Types.ObjectId(correctUserId);
+      const gameFinded = { owner: MongooseIdOwner };
+      const reqWithParams = {
+        ...req,
+        body: { id: null },
+        params: { idGame: gameId },
+      } as unknown as CustomRequest;
+
+      Game.findById = jest.fn().mockReturnValue(gameFinded);
+
+      await gameOwnerChecker(
+        reqWithParams as CustomRequest,
         res as Response,
         next as NextFunction
       );
